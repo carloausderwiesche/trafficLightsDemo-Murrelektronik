@@ -1,25 +1,139 @@
 import React, { useState, useEffect } from "react";
 import TrafficLight from "./components/TrafficLight";
-import { Button, Box } from "@mui/material";
-import { yellow } from "@mui/material/colors";
+import { Button } from "@mui/material";
+import PedestrianTrafficLight from "./components/PedestrianTrafficLight";
 
-function App() {
-  const [ColorTrafficLight1, setColorTrafficLight1] = useState("green");
-  const [ColorTrafficLight2, setColorTrafficLight2] = useState("red");
+interface LightSequence {
+  color: string;
+  duration: number;
+}
+
+const lightSequence: LightSequence[] = [
+  { color: "red", duration: 1000 },
+  { color: "redYellow", duration: 2000 },
+  { color: "green", duration: 5000 },
+  { color: "yellow", duration: 1000 },
+  { color: "red", duration: 1000 },
+];
+
+const pedestrianSequence: LightSequence[] = [
+  { color: "red", duration: 1000 },
+  { color: "green", duration: 5000 },
+  { color: "red", duration: 1000 },
+];
+
+const App: React.FC = () => {
+  const [isRunning, setIsRunning] = useState<boolean>(false);
+  const [colorTrafficLight1, setColorTrafficLight1] = useState<string>("red");
+  const [colorTrafficLight2, setColorTrafficLight2] = useState<string>("red");
+  const [colorPedestrianLight, setColorPedestrianLight] =
+    useState<string>("red");
+  const [isPedestrianSequence, setIsPedestrianSequence] =
+    useState<boolean>(false);
+  const [stopRequested, setStopRequested] = useState<boolean>(false);
+
+  const runLightSequence = (
+    sequence: LightSequence[],
+    setColor: (color: string) => void,
+    callback?: () => void
+  ) => {
+    let totalDuration = 0;
+    sequence.forEach(({ color, duration }, index) => {
+      setTimeout(() => {
+        setColor(color);
+        if (index === sequence.length - 1 && callback) {
+          callback();
+        }
+      }, totalDuration);
+      totalDuration += duration;
+    });
+  };
+
+  const handleStart = () => {
+    setIsRunning(true);
+  };
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout | undefined;
+
+    const runLoop = () => {
+      console.log("Running loop");
+      console.log(stopRequested);
+
+      if (stopRequested) {
+        setIsPedestrianSequence(true);
+      } else {
+        runLightSequence(lightSequence, setColorTrafficLight1, () => {
+          setTimeout(() => {
+            runLightSequence(lightSequence, setColorTrafficLight2, () => {
+              switchPedestrianLight();
+            });
+          }, 1000);
+        });
+      } //
+    };
+
+    const switchPedestrianLight = () => {
+      console.log("Starting pedestrian sequence");
+      setStopRequested(false);
+      runLightSequence(pedestrianSequence, setColorPedestrianLight, () => {
+        setIsPedestrianSequence(false);
+      });
+      console.log(stopRequested);
+    };
+
+    if (isRunning && !isPedestrianSequence) {
+      console.log("Starting traffic light sequence");
+
+      const totalDuration =
+        lightSequence.reduce((acc, curr) => acc + curr.duration, 0) * 2 + 1000;
+      interval = setInterval(runLoop, totalDuration);
+      runLoop(); // Initial run
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isRunning, isPedestrianSequence, stopRequested]);
+
+  const handleStop = () => {
+    setStopRequested(true);
+  };
 
   return (
     <div className="w-screen h-screen p-10 bg-gray-300">
       <h1 className="text-center font-bold text-5xl mb-10">Traffic Lights</h1>
-      <Button variant="contained" color="primary" size="large">
-        Start
-      </Button>
+      <div className="flex justify-center gap-4">
+        <Button
+          variant="contained"
+          color="primary"
+          size="large"
+          onClick={handleStart}
+          disabled={isRunning}
+        >
+          {isRunning ? "Running..." : "Start"}
+        </Button>
+        <Button
+          variant="contained"
+          color="secondary"
+          size="large"
+          onClick={handleStop}
+          disabled={!isRunning || isPedestrianSequence}
+        >
+          Stop for Pedestrian
+        </Button>
+      </div>
 
-      <div className="m-10">
-        <TrafficLight color={ColorTrafficLight1} />
-        <TrafficLight color={ColorTrafficLight2} />
+      <div className="m-10 flex gap-10">
+        <TrafficLight color={colorTrafficLight1} />
+        <TrafficLight color={colorTrafficLight2} />
+      </div>
+
+      <div className="m-10 flex justify-center">
+        <PedestrianTrafficLight color={colorPedestrianLight} />
       </div>
     </div>
   );
-}
+};
 
 export default App;
