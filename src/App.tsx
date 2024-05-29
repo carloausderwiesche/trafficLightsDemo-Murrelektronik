@@ -125,35 +125,6 @@ const App: React.FC = () => {
           Traffic Lights Demo
         </h1>
 
-        {/* <div className="flex justify-center gap-4">
-        <Button
-          variant="contained"
-          color="primary"
-          size="large"
-          onClick={handleStart}
-          disabled={isRunning}
-        >
-          {isRunning ? "Running..." : "Start"}
-        </Button>
-      </div> */}
-
-        {/* <div className="m-10 flex gap-10">
-        <TrafficLight color={colorTrafficLight1} />
-        <TrafficLight color={colorTrafficLight2} />
-      </div> */}
-
-        {/* <div className="m-10 grid w-fit place-items-center">
-        <PedestrianTrafficLight color={colorPedestrianLight} />
-        <Button
-          color={stopRequested ? "error" : "primary"}
-          size="large"
-          onClick={handlePedestrianRequest}
-          disabled={!isRunning || isPedestrianSequence}
-        >
-          <AdjustIcon />
-        </Button>
-      </div> */}
-
         <Box
           display="flex"
           flexDirection="column"
