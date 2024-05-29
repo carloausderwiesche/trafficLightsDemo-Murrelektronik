@@ -10,17 +10,17 @@ interface LightSequence {
 }
 
 const lightSequence: LightSequence[] = [
-  { color: "red", duration: 500 },
-  { color: "redYellow", duration: 500 },
-  { color: "green", duration: 500 },
-  { color: "yellow", duration: 500 },
-  { color: "red", duration: 500 },
+  { color: "red", duration: 2000 },
+  { color: "redYellow", duration: 2000 },
+  { color: "green", duration: 5000 },
+  { color: "yellow", duration: 1000 },
+  { color: "red", duration: 2000 },
 ];
 
 const pedestrianSequence: LightSequence[] = [
-  { color: "red", duration: 500 },
-  { color: "green", duration: 500 },
-  { color: "red", duration: 500 },
+  { color: "red", duration: 1000 },
+  { color: "green", duration: 5000 },
+  { color: "red", duration: 2000 },
 ];
 
 const App: React.FC = () => {
@@ -90,7 +90,7 @@ const App: React.FC = () => {
 
     if (isRunning && !stopRequested && !isPedestrianSequence) {
       const totalDuration =
-        lightSequence.reduce((acc, curr) => acc + curr.duration, 0) * 2 + 1000;
+        lightSequence.reduce((acc, curr) => acc + curr.duration, 0) * 2;
       interval = setInterval(runTrafficLightSequence, totalDuration);
       runTrafficLightSequence();
     } else if (stopRequested && !trafficLightsRunning) {
@@ -100,7 +100,13 @@ const App: React.FC = () => {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isRunning, stopRequested, isPedestrianSequence, trafficLightsRunning]);
+  }, [
+    isRunning,
+    stopRequested,
+    isPedestrianSequence,
+    trafficLightsRunning,
+    isFirstIteration,
+  ]);
 
   return (
     <>
