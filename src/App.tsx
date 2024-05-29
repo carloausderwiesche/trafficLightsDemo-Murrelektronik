@@ -34,28 +34,19 @@ const App: React.FC = () => {
   const [stopRequested, setStopRequested] = useState<boolean>(false);
   const [trafficLightsRunning, setTrafficLightsRunning] =
     useState<boolean>(false);
-  const [initialRun, setInitialRun] = useState<boolean>(true);
+  const [isFirstIteration, setIsFirstIteration] = useState<boolean>(true);
 
   const runLightSequence = (
     sequence: LightSequence[],
     setColor: (color: string) => void,
     callback?: () => void
   ) => {
-    let seq = sequence;
-
     setTrafficLightsRunning(true);
-
-    if (initialRun) seq = sequence.slice(2);
-    else {
-      seq = sequence;
-      console.log(seq);
-    }
-
     let totalDuration = 0;
-    seq.forEach(({ color, duration }, index) => {
+    sequence.forEach(({ color, duration }, index) => {
       setTimeout(() => {
         setColor(color);
-        if (index === seq.length - 1 && callback) {
+        if (index === sequence.length - 1 && callback) {
           callback();
         }
       }, totalDuration);
@@ -75,14 +66,18 @@ const App: React.FC = () => {
     let interval: NodeJS.Timeout | undefined;
 
     const runTrafficLightSequence = () => {
-      runLightSequence(lightSequence, setColorTrafficLight1, () => {
-        setInitialRun(false);
-        setTimeout(() => {
-          runLightSequence(lightSequence, setColorTrafficLight2, () => {
-            setTrafficLightsRunning(false);
-          });
-        }, 1000);
-      });
+      runLightSequence(
+        isFirstIteration ? lightSequence.slice(2) : lightSequence,
+        setColorTrafficLight1,
+        () => {
+          setTimeout(() => {
+            runLightSequence(lightSequence, setColorTrafficLight2, () => {
+              setIsFirstIteration(false);
+              setTrafficLightsRunning(false);
+            });
+          }, 1000);
+        }
+      );
     };
 
     const switchToPedestrianLight = () => {
