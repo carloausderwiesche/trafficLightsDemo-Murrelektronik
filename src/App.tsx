@@ -124,16 +124,6 @@ const App: React.FC = () => {
           Traffic Lights Demo
         </h1>
 
-        <Button
-          variant="contained"
-          color="primary"
-          size="large"
-          onClick={handleStart}
-          disabled={isRunning}
-          sx={{ margin: "50px" }}
-        >
-          {isRunning ? "Running..." : "Start"}
-        </Button>
         {/* <div className="flex justify-center gap-4">
         <Button
           variant="contained"
@@ -172,6 +162,23 @@ const App: React.FC = () => {
           height="50%"
           position="relative"
         >
+          {/* START BUTTON */}
+          <Button
+            variant="contained"
+            color="primary"
+            size="large"
+            onClick={handleStart}
+            disabled={isRunning}
+            sx={{
+              position: "absolute",
+              top: "-100px",
+              left: "10px",
+              margin: "50px",
+            }}
+          >
+            {isRunning ? "Running..." : "Start"}
+          </Button>
+
           {/* Horizontal Road */}
           <Box
             position="absolute"
