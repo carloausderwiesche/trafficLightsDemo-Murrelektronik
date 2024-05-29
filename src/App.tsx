@@ -1,24 +1,3 @@
-// const lightSequence: LightSequence[] = [
-//   { color: "red", duration: 500 },
-//   { color: "redYellow", duration: 500 },
-//   { color: "green", duration: 500 },
-//   { color: "yellow", duration: 500 },
-//   { color: "red", duration: 500 },
-//   // { color: "red", duration: 1000 },
-//   // { color: "redYellow", duration: 2000 },
-//   // { color: "green", duration: 5000 },
-//   // { color: "yellow", duration: 1000 },
-//   // { color: "red", duration: 1000 },
-// ];
-
-// const pedestrianSequence: LightSequence[] = [
-//   // { color: "red", duration: 1000 },
-//   // { color: "green", duration: 5000 },
-//   // { color: "red", duration: 1000 },
-//   { color: "red", duration: 500 },
-//   { color: "green", duration: 500 },
-//   { color: "red", duration: 500 },
-// ];
 import React, { useState, useEffect } from "react";
 import TrafficLight from "./components/TrafficLight";
 import { Button } from "@mui/material";
@@ -45,27 +24,34 @@ const pedestrianSequence: LightSequence[] = [
 
 const App: React.FC = () => {
   const [isRunning, setIsRunning] = useState<boolean>(false);
-  const [colorTrafficLight1, setColorTrafficLight1] = useState<string>("red");
+  const [colorTrafficLight1, setColorTrafficLight1] = useState<string>("green");
   const [colorTrafficLight2, setColorTrafficLight2] = useState<string>("red");
-  const [trafficLightsRunning, setTrafficLightsRunning] =
-    useState<boolean>(false);
   const [colorPedestrianLight, setColorPedestrianLight] =
     useState<string>("red");
   const [isPedestrianSequence, setIsPedestrianSequence] =
     useState<boolean>(false);
   const [stopRequested, setStopRequested] = useState<boolean>(false);
+  const [trafficLightsRunning, setTrafficLightsRunning] =
+    useState<boolean>(false);
+  const [initialRun, setInitialRun] = useState<boolean>(true);
 
   const runLightSequence = (
     sequence: LightSequence[],
     setColor: (color: string) => void,
     callback?: () => void
   ) => {
+    let seq = sequence;
+
     setTrafficLightsRunning(true);
+
+    if (initialRun) seq = sequence.slice(2);
+    else seq = sequence;
+
     let totalDuration = 0;
-    sequence.forEach(({ color, duration }, index) => {
+    seq.forEach(({ color, duration }, index) => {
       setTimeout(() => {
         setColor(color);
-        if (index === sequence.length - 1 && callback) {
+        if (index === seq.length - 1 && callback) {
           callback();
         }
       }, totalDuration);
@@ -77,13 +63,18 @@ const App: React.FC = () => {
     setIsRunning(true);
   };
 
+  const handlePedestrianRequest = () => {
+    setStopRequested(true);
+  };
+
   useEffect(() => {
     let interval: NodeJS.Timeout | undefined;
 
-    const runLoop = () => {
+    const runTrafficLightSequence = () => {
       runLightSequence(lightSequence, setColorTrafficLight1, () => {
         setTimeout(() => {
           runLightSequence(lightSequence, setColorTrafficLight2, () => {
+            setInitialRun(false);
             setTrafficLightsRunning(false);
           });
         }, 1000);
@@ -93,7 +84,6 @@ const App: React.FC = () => {
     const switchToPedestrianLight = () => {
       setStopRequested(false);
       setIsPedestrianSequence(true);
-
       runLightSequence(pedestrianSequence, setColorPedestrianLight, () => {
         setIsPedestrianSequence(false);
       });
@@ -102,8 +92,8 @@ const App: React.FC = () => {
     if (isRunning && !stopRequested && !isPedestrianSequence) {
       const totalDuration =
         lightSequence.reduce((acc, curr) => acc + curr.duration, 0) * 2 + 1000;
-      interval = setInterval(runLoop, totalDuration);
-      runLoop(); // Initial run
+      interval = setInterval(runTrafficLightSequence, totalDuration);
+      runTrafficLightSequence();
     } else if (stopRequested && !trafficLightsRunning) {
       switchToPedestrianLight();
     }
@@ -112,10 +102,6 @@ const App: React.FC = () => {
       if (interval) clearInterval(interval);
     };
   }, [isRunning, stopRequested, isPedestrianSequence, trafficLightsRunning]);
-
-  const pedestrianRequest = () => {
-    setStopRequested(true);
-  };
 
   return (
     <div className="w-screen h-screen p-10 bg-gray-300">
@@ -134,7 +120,7 @@ const App: React.FC = () => {
           variant="contained"
           color="secondary"
           size="large"
-          onClick={pedestrianRequest}
+          onClick={handlePedestrianRequest}
           disabled={!isRunning || isPedestrianSequence}
         >
           Stop for Pedestrian
