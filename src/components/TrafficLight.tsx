@@ -1,4 +1,5 @@
 import React from "react";
+import { Box } from "@mui/material";
 
 type Props = {
   color: string;
@@ -7,37 +8,75 @@ type Props = {
 
 const TrafficLight = (props: Props) => {
   return (
-    <div
-      className={`bg-black w-fit h-36 p-2 gap-1 grid place-items-center rounded-lg ${
-        props.rotate ? "rotate-90" : ""
-      }`}
+    <Box
+      sx={{
+        backgroundColor: "black",
+        width: "fit-content",
+        height: "144px",
+        padding: "8px",
+        gap: "4px",
+        display: "grid",
+        placeItems: "center",
+        borderRadius: "8px",
+        transform: props.rotate ? "rotate(90deg)" : "none",
+      }}
     >
       {props.color === "redYellow" ? (
         <>
-          <div className="size-10 bg-red-500 rounded-full" />
-          <div className="size-10 bg-yellow-500 rounded-full" />
-          <div className="size-10 bg-gray-500 rounded-full" />
+          <Box
+            sx={{
+              width: "40px",
+              height: "40px",
+              backgroundColor: "red",
+              borderRadius: "50%",
+            }}
+          />
+          <Box
+            sx={{
+              width: "40px",
+              height: "40px",
+              backgroundColor: "#F7DA41",
+              borderRadius: "50%",
+            }}
+          />
+          <Box
+            sx={{
+              width: "40px",
+              height: "40px",
+              backgroundColor: "gray",
+              borderRadius: "50%",
+            }}
+          />
         </>
       ) : (
         <>
-          <div
-            className={`size-10 rounded-full ${
-              props.color === "red" ? "bg-red-500" : "bg-gray-500"
-            }`}
+          <Box
+            sx={{
+              width: "40px",
+              height: "40px",
+              backgroundColor: props.color === "red" ? "red" : "gray",
+              borderRadius: "50%",
+            }}
           />
-          <div
-            className={`size-10 rounded-full ${
-              props.color === "yellow" ? "bg-yellow-500" : "bg-gray-500"
-            }`}
+          <Box
+            sx={{
+              width: "40px",
+              height: "40px",
+              backgroundColor: props.color === "yellow" ? "#F7DA41" : "gray",
+              borderRadius: "50%",
+            }}
           />
-          <div
-            className={`size-10 rounded-full ${
-              props.color === "green" ? "bg-green-500" : "bg-gray-500"
-            }`}
+          <Box
+            sx={{
+              width: "40px",
+              height: "40px",
+              backgroundColor: props.color === "green" ? "#03FF00" : "gray",
+              borderRadius: "50%",
+            }}
           />
         </>
       )}
-    </div>
+    </Box>
   );
 };
 

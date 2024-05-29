@@ -1,4 +1,5 @@
 import React from "react";
+import { Box } from "@mui/material";
 
 type Props = {
   color: string;
@@ -7,22 +8,36 @@ type Props = {
 
 const PedestrianTrafficLight = (props: Props) => {
   return (
-    <div
-      className={`bg-black w-fit h-28 p-2 gap-1 grid place-items-center rounded-lg ${
-        props.rotate ? "rotate-90" : ""
-      }`}
+    <Box
+      sx={{
+        backgroundColor: "black",
+        width: "fit-content",
+        height: "112px",
+        padding: "8px",
+        gap: "1px",
+        display: "grid",
+        placeItems: "center",
+        borderRadius: "8px",
+        transform: props.rotate ? "rotate(90deg)" : "none",
+      }}
     >
-      <div
-        className={`size-10 rounded-full ${
-          props.color === "red" ? "bg-red-500" : "bg-gray-500"
-        }`}
+      <Box
+        sx={{
+          width: "40px",
+          height: "40px",
+          backgroundColor: props.color === "red" ? "red" : "gray",
+          borderRadius: "50%",
+        }}
       />
-      <div
-        className={`size-10 rounded-full ${
-          props.color === "green" ? "bg-green-500" : "bg-gray-500"
-        }`}
+      <Box
+        sx={{
+          width: "40px",
+          height: "40px",
+          backgroundColor: props.color === "green" ? "green" : "gray",
+          borderRadius: "50%",
+        }}
       />
-    </div>
+    </Box>
   );
 };
 
